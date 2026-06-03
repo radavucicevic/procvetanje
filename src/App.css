@@ -1,0 +1,515 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@300;400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --zelena: #14231a;
+  --zelena-mid: #1e3024;
+  --zlatna: #e8a020;
+  --krem: #f5f0e8;
+  --bela: #ffffff;
+  --tekst-tamni: #1a1a1a;
+  --tekst-mid: #5a4f42;
+  --tekst-svetli: rgba(245,240,232,0.75);
+}
+
+body {
+  font-family: 'Jost', sans-serif;
+  background: var(--zelena);
+  color: var(--krem);
+  min-height: 100vh;
+}
+
+/* HEADER */
+.app-header {
+  background: var(--zelena);
+  padding: 2rem 1.5rem 0;
+  text-align: center;
+  border-bottom: 1px solid rgba(232,160,32,0.25);
+}
+.header-logo {
+  font-size: 0.62rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(245,240,232,0.6);
+  margin-bottom: 1rem;
+  font-weight: 300;
+}
+.header-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.4rem, 6vw, 3.4rem);
+  font-weight: 400;
+  color: var(--bela);
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+.header-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: rgba(245,240,232,0.7);
+  margin-top: 0.4rem;
+}
+
+/* NAV */
+.app-nav {
+  display: flex;
+  margin-top: 1.2rem;
+  border-top: 1px solid rgba(232,160,32,0.15);
+}
+.app-nav button {
+  flex: 1;
+  padding: 0.75rem 0.5rem;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  background: transparent;
+  border: none;
+  color: rgba(245,240,232,0.45);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  font-weight: 400;
+}
+.app-nav button.active { color: var(--zlatna); border-bottom-color: var(--zlatna); }
+.app-nav button:hover:not(.active) { color: rgba(245,240,232,0.75); }
+
+/* MAIN */
+.main { padding-bottom: 3rem; }
+
+/* DAY NAV */
+.day-nav-bar {
+  background: var(--zelena-mid);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+}
+.day-nav-bar button {
+  font-size: 1rem;
+  background: transparent;
+  border: 0.5px solid rgba(232,160,32,0.35);
+  color: var(--zlatna);
+  width: 36px; height: 36px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.day-nav-bar button:hover { background: rgba(232,160,32,0.15); }
+.day-nav-bar button:disabled { opacity: 0.2; cursor: default; }
+.day-num-display { text-align: center; }
+.day-big {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.8rem;
+  color: var(--zlatna);
+  font-weight: 300;
+  line-height: 1;
+  display: block;
+}
+.day-of {
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(245,240,232,0.4);
+  font-weight: 300;
+}
+
+/* SECTIONS */
+.section-dark { background: var(--zelena); padding: 1.2rem 1.5rem; }
+.section-mid { background: var(--zelena-mid); padding: 1.2rem 1.5rem; }
+.section-light { background: var(--krem); padding: 1.2rem 1.5rem; color: var(--tekst-tamni); }
+.border-top { border-top: 1px solid rgba(20,35,26,0.1); }
+
+.section-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  margin-bottom: 0.9rem;
+  font-weight: 500;
+}
+.section-label.gold { color: var(--zlatna); }
+.section-label.dark { color: rgba(20,35,26,0.55); }
+
+/* MEDIA BUTTONS */
+.media-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.7rem 1.1rem;
+  border: 1px solid rgba(232,160,32,0.4);
+  background: rgba(232,160,32,0.07);
+  color: var(--zlatna);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+  font-family: 'Jost', sans-serif;
+  width: 100%;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+.media-btn:hover { background: rgba(232,160,32,0.2); }
+.media-btn.small { width: auto; padding: 0.5rem 0.9rem; font-size: 0.65rem; }
+
+/* TAPKANJA */
+.tapkanja-lista { display: flex; flex-direction: column; gap: 10px; }
+.tapkanje-card {
+  border: 1px solid rgba(232,160,32,0.3);
+  padding: 1rem;
+  background: rgba(232,160,32,0.05);
+}
+.tapkanje-naziv {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  color: var(--bela);
+  font-weight: 400;
+  margin-bottom: 0.3rem;
+}
+.tapkanje-opis {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: rgba(245,240,232,0.6);
+  margin-bottom: 0.7rem;
+  line-height: 1.5;
+}
+.tapkanje-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* RADA MISAO */
+.rada-misao {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1.1rem;
+  line-height: 1.75;
+  color: var(--tekst-tamni);
+  border-left: 2px solid var(--zlatna);
+  padding: 0.7rem 1rem;
+  background: rgba(232,160,32,0.06);
+}
+.placeholder-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: #b0a494;
+}
+.placeholder-text.center { text-align: center; padding: 2rem; }
+
+/* FORMA */
+.forma { margin-bottom: 1.2rem; display: flex; flex-direction: column; gap: 6px; }
+.inp {
+  width: 100%;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  padding: 0.6rem 0.8rem;
+  border: 0.5px solid rgba(20,35,26,0.2);
+  background: #faf8f3;
+  color: var(--tekst-tamni);
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.2s;
+  line-height: 1.55;
+  display: block;
+  margin-bottom: 4px;
+}
+.inp:focus { border-color: var(--zlatna); }
+.inp::placeholder { color: #a8a09a; font-style: italic; }
+
+.section-dark .inp, .section-mid .inp {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(232,160,32,0.3);
+  color: var(--krem);
+}
+.section-dark .inp::placeholder, .section-mid .inp::placeholder { color: rgba(245,240,232,0.3); }
+
+.btn-primary {
+  width: 100%;
+  padding: 0.75rem;
+  font-family: 'Jost', sans-serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  border: 1px solid var(--zelena);
+  background: var(--zelena);
+  color: var(--krem);
+  cursor: pointer;
+  transition: all 0.25s;
+  font-weight: 500;
+  margin-top: 4px;
+}
+.btn-primary:hover:not(:disabled) { background: var(--zlatna); border-color: var(--zlatna); color: var(--zelena); }
+.btn-primary:disabled { opacity: 0.5; cursor: default; }
+
+.section-dark .btn-primary, .section-mid .btn-primary {
+  border-color: var(--zlatna);
+  background: rgba(232,160,32,0.1);
+  color: var(--zlatna);
+}
+.section-dark .btn-primary:hover, .section-mid .btn-primary:hover { background: var(--zlatna); color: var(--zelena); }
+
+.btn-xs {
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.8rem;
+  border: 0.5px solid var(--zelena);
+  background: transparent;
+  color: var(--zelena);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 400;
+}
+.btn-xs:hover { background: var(--zelena); color: var(--krem); }
+.btn-xs.danger { border-color: #c0392b; color: #c0392b; }
+.btn-xs.danger:hover { background: #c0392b; color: white; }
+
+/* UNOSI */
+.vec-upisala {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--zlatna);
+  padding: 0.5rem 0;
+  margin-bottom: 0.8rem;
+}
+.unosi-lista { display: flex; flex-direction: column; gap: 8px; margin-top: 0.8rem; }
+.unos-card {
+  background: white;
+  border: 0.5px solid rgba(20,35,26,0.1);
+  padding: 0.9rem 1rem;
+}
+.unos-ime {
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--zlatna);
+  font-weight: 500;
+  margin-bottom: 0.35rem;
+}
+.unos-misao {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--tekst-tamni);
+  line-height: 1.6;
+}
+.unos-izazov {
+  font-size: 0.82rem;
+  color: var(--tekst-mid);
+  margin-top: 0.4rem;
+  padding-top: 0.4rem;
+  border-top: 0.5px solid rgba(20,35,26,0.08);
+  line-height: 1.5;
+}
+.izazov-lbl {
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #b0a494;
+  font-weight: 400;
+}
+
+/* ZBORNIK */
+.zbornik-header {
+  background: var(--krem);
+  padding: 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(20,35,26,0.1);
+  color: var(--tekst-tamni);
+}
+.zbornik-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: var(--zelena);
+}
+.zbornik-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: #8a7d6e;
+  margin-top: 0.3rem;
+}
+.zb-stats {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+.zb-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem;
+  color: var(--zlatna);
+  display: block;
+  line-height: 1;
+}
+.zb-lbl {
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #8a7d6e;
+  font-weight: 300;
+  display: block;
+  margin-top: 2px;
+}
+.zb-dan {
+  background: var(--krem);
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid rgba(20,35,26,0.08);
+  color: var(--tekst-tamni);
+}
+.zb-dan-header { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.8rem; }
+.zb-dan-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.9rem;
+  color: var(--zlatna);
+  white-space: nowrap;
+  font-weight: 400;
+}
+.zb-line { flex: 1; height: 0.5px; background: rgba(20,35,26,0.15); }
+.zb-rada-misao {
+  border-left: 2px solid var(--zlatna);
+  padding: 0.6rem 0.9rem;
+  background: rgba(232,160,32,0.06);
+  margin-bottom: 0.8rem;
+}
+.zb-rada-lbl {
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--zlatna);
+  font-weight: 500;
+  margin-bottom: 3px;
+}
+.zb-rada-tekst {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--tekst-tamni);
+  line-height: 1.6;
+}
+.zb-unos {
+  padding: 0.5rem 0;
+  border-bottom: 0.5px solid rgba(20,35,26,0.07);
+}
+.zb-unos:last-child { border-bottom: none; }
+.zb-unos-ime {
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8a7d6e;
+  font-weight: 400;
+  margin-bottom: 3px;
+}
+.zb-unos-misao {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 0.98rem;
+  color: var(--tekst-tamni);
+  line-height: 1.55;
+}
+.zb-unos-izazov {
+  font-size: 0.8rem;
+  color: var(--tekst-mid);
+  margin-top: 3px;
+  line-height: 1.45;
+}
+
+/* ADMIN */
+.admin { background: var(--zelena); }
+.admin-section {
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid rgba(232,160,32,0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tap-admin-card {
+  border: 0.5px solid rgba(232,160,32,0.3);
+  padding: 0.9rem 1rem;
+  background: rgba(232,160,32,0.04);
+  margin-bottom: 8px;
+}
+.tap-admin-naziv {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem;
+  color: var(--bela);
+  margin-bottom: 3px;
+}
+.tap-admin-opis { font-size: 0.82rem; color: rgba(245,240,232,0.55); margin-bottom: 6px; }
+.tap-admin-links { display: flex; gap: 10px; font-size: 0.7rem; color: var(--zlatna); margin-bottom: 8px; }
+.tap-admin-actions { display: flex; gap: 8px; }
+.add-tapkanje { display: flex; flex-direction: column; gap: 6px; margin-top: 0.5rem; }
+
+/* PRIJAVA */
+.prijava-wrap {
+  min-height: 100vh;
+  background: var(--zelena);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.prijava-card {
+  background: var(--zelena-mid);
+  border: 1px solid rgba(232,160,32,0.25);
+  padding: 2rem 1.5rem;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+}
+.prijava-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 300;
+  color: var(--bela);
+  margin-bottom: 0.6rem;
+}
+.prijava-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: rgba(245,240,232,0.6);
+  margin-bottom: 1.2rem;
+  line-height: 1.6;
+}
+.prijava-card .inp {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(232,160,32,0.3);
+  color: var(--krem);
+  text-align: center;
+  font-size: 1.05rem;
+  margin-bottom: 0.8rem;
+}
+.prijava-card .btn-primary {
+  border-color: var(--zlatna);
+  background: var(--zlatna);
+  color: var(--zelena);
+}
+.prijava-card .btn-primary:hover { background: var(--bela); border-color: var(--bela); }
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--zlatna);
+  color: var(--zelena);
+  padding: 0.6rem 1.4rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 600;
+  z-index: 999;
+  pointer-events: none;
+}
+
+/* RESPONSIVE */
+@media (max-width: 420px) {
+  .app-nav button { font-size: 0.55rem; letter-spacing: 0.15em; }
+  .day-big { font-size: 2.2rem; }
+}
