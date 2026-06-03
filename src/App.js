@@ -114,7 +114,13 @@ export default function App() {
           ucesnica={ucesnica}
           onUnos={async (misao, izazov) => {
             setLoading(true);
-            const { error } = await supabase.from('unosi_grupe').insert({
+            console.log('Saving:', currentDay, url);
+const { data, error } = await supabase.from('snimci_prakse').upsert({ dan: currentDay, url }, { onConflict: 'dan' });
+console.log('Result:', data, error);
+if (error) { showToast('Greška: ' + error.message); return; }
+setSnimakUrl(url);
+showToast('Snimak sačuvan · dan ' + currentDay + ' ✦');
+loadDan(currentDay);
               ucesnica_ime: ucesnica.ime,
               dan: currentDay,
               misao,
