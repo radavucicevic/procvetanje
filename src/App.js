@@ -340,7 +340,7 @@ function AdminScreen({ currentDay, tapkanja, snimakUrl, radaMisao, onSaveMisao, 
       <div className="admin-section">
         <div className="section-label gold">Dan {currentDay} · Snimak prakse</div>
         <input className="inp" type="url" value={snimakInp} onChange={e => setSnimakInp(e.target.value)} placeholder="Google Drive / YouTube link..." />
-        <button type="button" className="btn-primary" onClick={() => { alert('klik!'); onSaveSnimak(snimakInp); }}>Sačuvaj link</button>
+        <button type="button" className="btn-primary" onClick={() => onSaveSnimak(snimakInp)}>Sačuvaj link</button>
       </div>
 
       <div className="admin-section">
