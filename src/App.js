@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from './lib/supabase';
 import './App.css';
 
@@ -10,12 +10,12 @@ function getCurrentDay() {
   const today = new Date();
   const diff = Math.floor((today - START_DATE) / (1000 * 60 * 60 * 24)) + 1;
   if (diff < 1) return 1;
-  if (diff > TOTAL_DAYS) return 1;
+  if (diff > TOTAL_DAYS) return TOTAL_DAYS;
   return diff;
 }
 
 export default function App() {
-  const [screen, setScreen] = useState('prijava'); // prijava | danas | zbornik | admin
+  const [screen, setScreen] = useState('prijava');
   const [ucesnica, setUcesnica] = useState(() => {
     try { return JSON.parse(localStorage.getItem('procv_ucesnica')) || null; } catch { return null; }
   });
@@ -27,6 +27,7 @@ export default function App() {
   const [snimakUrl, setSnimakUrl] = useState('');
   const [toast, setToast] = useState('');
   const [loading, setLoading] = useState(false);
+  const [zborniData, setZborniData] = useState([]);
 
   useEffect(() => {
     if (ucesnica) setScreen('danas');
@@ -42,9 +43,9 @@ export default function App() {
 
   async function loadDan() {
     const [misaoRes, unosiRes, snimakRes] = await Promise.all([
-      supabase.from('misli_rade').select('*').eq('dan', currentDay).single(),
+      supabase.from('misli_rade').select('*').eq('dan', currentDay).maybeSingle(),
       supabase.from('unosi_grupe').select('*').eq('dan', currentDay).order('created_at', { ascending: false }),
-      supabase.from('snimci_prakse').select('*').eq('dan', currentDay).single(),
+      supabase.from('snimci_prakse').select('*').eq('dan', currentDay).maybeSingle(),
     ]);
     setRadaMisao(misaoRes.data?.tekst || '');
     setUnosiDana(unosiRes.data || []);
@@ -56,7 +57,6 @@ export default function App() {
     setTapkanja(data || []);
   }
 
-  const [zborniData, setZborniData] = useState([]);
   async function loadZbornik() {
     const { data } = await supabase
       .from('unosi_grupe').select('*').order('dan').order('created_at');
@@ -75,12 +75,14 @@ export default function App() {
     setTimeout(() => setToast(''), 3000);
   }
 
-  if (screen === 'prijava') return <Prijava onPrijava={ime => {
-    const u = { ime };
-    localStorage.setItem('procv_ucesnica', JSON.stringify(u));
-    setUcesnica(u);
-    setScreen('danas');
-  }} />;
+  if (screen === 'prijava') return (
+    <Prijava onPrijava={ime => {
+      const u = { ime };
+      localStorage.setItem('procv_ucesnica', JSON.stringify(u));
+      setUcesnica(u);
+      setScreen('danas');
+    }} />
+  );
 
   return (
     <div className="app">
@@ -89,9 +91,9 @@ export default function App() {
         <h1 className="header-title">Procvetanje</h1>
         <p className="header-sub">40 jutara od promene ka isceljenju</p>
         <nav className="app-nav">
-          <button className={screen==='danas'?'active':''} onClick={() => setScreen('danas')}>Danas</button>
-          <button className={screen==='zbornik'?'active':''} onClick={() => setScreen('zbornik')}>Zbornik</button>
-          <button className={screen==='admin'?'active':''} onClick={() => {
+          <button className={screen === 'danas' ? 'active' : ''} onClick={() => setScreen('danas')}>Danas</button>
+          <button className={screen === 'zbornik' ? 'active' : ''} onClick={() => setScreen('zbornik')}>Zbornik</button>
+          <button className={screen === 'admin' ? 'active' : ''} onClick={() => {
             if (!isAdmin) {
               const p = window.prompt('Admin lozinka:');
               if (p === ADMIN_PASSWORD) { setIsAdmin(true); setScreen('admin'); }
@@ -114,21 +116,20 @@ export default function App() {
           ucesnica={ucesnica}
           onUnos={async (misao, izazov) => {
             setLoading(true);
-            console.log('Saving:', currentDay, url);
-const { data, error } = await supabase.from('snimci_prakse').upsert({ dan: currentDay, url }, { onConflict: 'dan' });
-console.log('Result:', data, error);
-if (error) { showToast('Greška: ' + error.message); return; }
-setSnimakUrl(url);
-showToast('Snimak sačuvan · dan ' + currentDay + ' ✦');
-loadDan(currentDay);
+            const { error } = await supabase.from('unosi_grupe').insert({
               ucesnica_ime: ucesnica.ime,
               dan: currentDay,
               misao,
               izazov,
             });
             setLoading(false);
-            if (!error) { showToast('Glas dodat ✦'); loadDan(); }
-            else showToast('Greška, pokušaj ponovo');
+            if (!error) {
+              showToast('Glas dodat ✦');
+              loadDan();
+            } else {
+              console.error('Greška pri unosu:', error);
+              showToast('Greška: ' + error.message);
+            }
           }}
           loading={loading}
         />
@@ -145,24 +146,63 @@ loadDan(currentDay);
           snimakUrl={snimakUrl}
           radaMisao={radaMisao}
           onSaveMisao={async (tekst) => {
-            await supabase.from('misli_rade').upsert({ dan: currentDay, tekst, updated_at: new Date() }, { onConflict: 'dan' });
-            showToast('Misao sačuvana ✦'); loadDan();
+            const { error } = await supabase.from('misli_rade').upsert(
+              { dan: currentDay, tekst },
+              { onConflict: 'dan' }
+            );
+            if (error) {
+              console.error('Greška pri čuvanju misli:', error);
+              showToast('Greška: ' + error.message);
+            } else {
+              showToast('Misao sačuvana ✦');
+              loadDan();
+            }
           }}
           onSaveSnimak={async (url) => {
-            await supabase.from('snimci_prakse').upsert({ dan: currentDay, url }, { onConflict: 'dan' });
-            showToast('Snimak sačuvan ✦'); loadDan();
+            const { error } = await supabase.from('snimci_prakse').upsert(
+              { dan: currentDay, url },
+              { onConflict: 'dan' }
+            );
+            if (error) {
+              console.error('Greška pri čuvanju snimka:', error);
+              showToast('Greška: ' + error.message);
+            } else {
+              showToast('Snimak sačuvan ✦');
+              loadDan();
+            }
           }}
           onAddTapkanje={async (t) => {
-            await supabase.from('tapkanja').insert({ ...t, redosled: tapkanja.length });
-            showToast('Tapkanje dodato ✦'); loadTapkanja();
+            const { error } = await supabase.from('tapkanja').insert({
+              ...t,
+              redosled: tapkanja.length,
+            });
+            if (error) {
+              console.error('Greška pri dodavanju tapkanja:', error);
+              showToast('Greška: ' + error.message);
+            } else {
+              showToast('Tapkanje dodato ✦');
+              loadTapkanja();
+            }
           }}
           onDeleteTapkanje={async (id) => {
-            await supabase.from('tapkanja').delete().eq('id', id);
-            showToast('Obrisano'); loadTapkanja();
+            const { error } = await supabase.from('tapkanja').delete().eq('id', id);
+            if (error) {
+              console.error('Greška pri brisanju:', error);
+              showToast('Greška: ' + error.message);
+            } else {
+              showToast('Obrisano');
+              loadTapkanja();
+            }
           }}
           onUpdateTapkanje={async (id, data) => {
-            await supabase.from('tapkanja').update(data).eq('id', id);
-            showToast('Sačuvano ✦'); loadTapkanja();
+            const { error } = await supabase.from('tapkanja').update(data).eq('id', id);
+            if (error) {
+              console.error('Greška pri ažuriranju:', error);
+              showToast('Greška: ' + error.message);
+            } else {
+              showToast('Sačuvano ✦');
+              loadTapkanja();
+            }
           }}
         />
       )}
@@ -202,9 +242,12 @@ function DanasScreen({ currentDay, setCurrentDay, radaMisao, unosiDana, tapkanja
   return (
     <main className="main">
       <div className="day-nav-bar">
-        <button onClick={() => setCurrentDay(d => Math.max(1, d-1))} disabled={currentDay <= 1}>←</button>
-        <div className="day-num-display"><span className="day-big">{currentDay}</span><span className="day-of">od 40</span></div>
-        <button onClick={() => setCurrentDay(d => Math.min(TOTAL_DAYS, d+1))} disabled={currentDay >= TOTAL_DAYS}>→</button>
+        <button onClick={() => setCurrentDay(d => Math.max(1, d - 1))} disabled={currentDay <= 1}>←</button>
+        <div className="day-num-display">
+          <span className="day-big">{currentDay}</span>
+          <span className="day-of">od 40</span>
+        </div>
+        <button onClick={() => setCurrentDay(d => Math.min(TOTAL_DAYS, d + 1))} disabled={currentDay >= TOTAL_DAYS}>→</button>
       </div>
 
       {snimakUrl && (
@@ -248,7 +291,17 @@ function DanasScreen({ currentDay, setCurrentDay, radaMisao, unosiDana, tapkanja
           <div className="forma">
             <textarea className="inp" rows={3} placeholder="Moja misao za danas..." value={misao} onChange={e => setMisao(e.target.value)} />
             <textarea className="inp" rows={2} placeholder="Moj izazov danas... (opciono)" value={izazov} onChange={e => setIzazov(e.target.value)} />
-            <button className="btn-primary" onClick={() => { if (misao.trim()) { onUnos(misao.trim(), izazov.trim()); setMisao(''); setIzazov(''); }}} disabled={loading}>
+            <button
+              className="btn-primary"
+              onClick={() => {
+                if (misao.trim()) {
+                  onUnos(misao.trim(), izazov.trim());
+                  setMisao('');
+                  setIzazov('');
+                }
+              }}
+              disabled={loading}
+            >
               {loading ? 'Šaljem...' : `Dodaj glas · ${ucesnica?.ime} ✦`}
             </button>
           </div>
@@ -327,7 +380,10 @@ function AdminScreen({ currentDay, tapkanja, snimakUrl, radaMisao, onSaveMisao, 
   const [novTapAudio, setNovTapAudio] = useState('');
   const [editTap, setEditTap] = useState(null);
 
-  useEffect(() => { setMisaoInp(radaMisao); setSnimakInp(snimakUrl); }, [radaMisao, snimakUrl]);
+  useEffect(() => {
+    setMisaoInp(radaMisao);
+    setSnimakInp(snimakUrl);
+  }, [radaMisao, snimakUrl]);
 
   return (
     <main className="main admin">
@@ -340,7 +396,7 @@ function AdminScreen({ currentDay, tapkanja, snimakUrl, radaMisao, onSaveMisao, 
       <div className="admin-section">
         <div className="section-label gold">Dan {currentDay} · Snimak prakse</div>
         <input className="inp" type="url" value={snimakInp} onChange={e => setSnimakInp(e.target.value)} placeholder="Google Drive / YouTube link..." />
-        <button type="button" className="btn-primary" onClick={() => onSaveSnimak(snimakInp)}>Sačuvaj link</button>
+        <button className="btn-primary" onClick={() => onSaveSnimak(snimakInp)}>Sačuvaj link</button>
       </div>
 
       <div className="admin-section">
@@ -348,7 +404,11 @@ function AdminScreen({ currentDay, tapkanja, snimakUrl, radaMisao, onSaveMisao, 
         {tapkanja.map(t => (
           <div key={t.id} className="tap-admin-card">
             {editTap === t.id ? (
-              <EditTapkanje t={t} onSave={(data) => { onUpdateTapkanje(t.id, data); setEditTap(null); }} onCancel={() => setEditTap(null)} />
+              <EditTapkanje
+                t={t}
+                onSave={(data) => { onUpdateTapkanje(t.id, data); setEditTap(null); }}
+                onCancel={() => setEditTap(null)}
+              />
             ) : (
               <>
                 <div className="tap-admin-naziv">{t.naziv}</div>
@@ -365,8 +425,9 @@ function AdminScreen({ currentDay, tapkanja, snimakUrl, radaMisao, onSaveMisao, 
             )}
           </div>
         ))}
+
         <div className="add-tapkanje">
-          <div className="section-label gold" style={{marginTop:'1rem'}}>Dodaj novo tapkanje</div>
+          <div className="section-label gold" style={{ marginTop: '1rem' }}>Dodaj novo tapkanje</div>
           <input className="inp" placeholder="Naziv (npr. Tapkanje za stres)" value={novTapNaziv} onChange={e => setNovTapNaziv(e.target.value)} />
           <input className="inp" placeholder="Kratki opis (opciono)" value={novTapOpis} onChange={e => setNovTapOpis(e.target.value)} />
           <input className="inp" type="url" placeholder="Video link (YouTube / Drive)" value={novTapVideo} onChange={e => setNovTapVideo(e.target.value)} />
@@ -393,7 +454,7 @@ function EditTapkanje({ t, onSave, onCancel }) {
       <input className="inp" value={opis} onChange={e => setOpis(e.target.value)} placeholder="Opis" />
       <input className="inp" type="url" value={video} onChange={e => setVideo(e.target.value)} placeholder="Video link" />
       <input className="inp" type="url" value={audio} onChange={e => setAudio(e.target.value)} placeholder="Audio link" />
-      <div style={{display:'flex',gap:'8px',marginTop:'6px'}}>
+      <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
         <button className="btn-primary" onClick={() => onSave({ naziv, opis, url_video: video, url_audio: audio })}>Sačuvaj</button>
         <button className="btn-xs" onClick={onCancel}>Odustani</button>
       </div>
