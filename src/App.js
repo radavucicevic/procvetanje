@@ -4,12 +4,14 @@ import './App.css';
 
 const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD || 'procvetanje2025';
 const TOTAL_DAYS = 40;
-const START_DATE = new Date('2025-05-25');
+const START_DATE = new Date('2026-05-25');
 
 function getCurrentDay() {
   const today = new Date();
   const diff = Math.floor((today - START_DATE) / (1000 * 60 * 60 * 24)) + 1;
-  return Math.min(Math.max(diff, 1), TOTAL_DAYS);
+  if (diff < 1) return 1;
+  if (diff > TOTAL_DAYS) return 1;
+  return diff;
 }
 
 export default function App() {
