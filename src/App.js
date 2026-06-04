@@ -80,9 +80,9 @@ export default function App() {
 
   if (screen === 'prijava') return (
     <Prijava onPrijava={ime => {
-      const u = { ime, proverena: true };
-      localStorage.setItem('procv_ucesnica', JSON.stringify(u));
-      setUcesnica(u);
+      const u = { ime: ime, proverena: true };
+    localStorage.setItem('procv_ucesnica', JSON.stringify(u));
+    setUcesnica(u);
       setScreen('danas');
     }} />
   );
@@ -233,14 +233,27 @@ function Prijava({ onPrijava }) {
       <div className="prijava-card">
         <div className="prijava-title">Dobrodošla</div>
         <p className="prijava-sub">Upiši ime i lozinku grupe da bi ušla.</p>
-        <input className="inp" type="text" placeholder="Tvoje ime..." value={ime} onChange={e => setIme(e.target.value)} autoFocus />
-        <input className="inp" type="password" placeholder="Lozinka grupe..." value={lozinka} onChange={e => { setLozinka(e.target.value); setGreska(''); }} onKeyDown={e => e.key === 'Enter' && handleUlaz()} />
+        <input
+          className="inp"
+          type="text"
+          placeholder="Tvoje ime..."
+          value={ime}
+          onChange={e => setIme(e.target.value)}
+          autoFocus
+        />
+        <input
+          className="inp"
+          type="password"
+          placeholder="Lozinka grupe..."
+          value={lozinka}
+          onChange={e => { setLozinka(e.target.value); setGreska(''); }}
+          onKeyDown={e => e.key === 'Enter' && handleUlaz()}
+        />
         {greska && <p style={{color:'#c0392b', fontSize:'13px', margin:'4px 0 0'}}>{greska}</p>}
-        <button className="btn-primary" onClick={handleUlaz}>Ulaz u grupu ✦</button>
+        <button className="btn-primary" onClick={handleUlaz}>
+          Ulaz u grupu ✦
+        </button>
       </div>
-    </div>
-  );
-}
     </div>
   );
 }
@@ -471,4 +484,4 @@ function EditTapkanje({ t, onSave, onCancel }) {
       </div>
     </div>
   );
-}           
+}
