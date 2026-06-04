@@ -215,24 +215,32 @@ export default function App() {
 
 function Prijava({ onPrijava }) {
   const [ime, setIme] = useState('');
+  const [lozinka, setLozinka] = useState('');
+  const [greska, setGreska] = useState('');
+  const GRUPA_LOZINKA = 'radost';
+
+  function handleUlaz() {
+    if (!ime.trim()) return;
+    if (lozinka !== GRUPA_LOZINKA) {
+      setGreska('Pogrešna lozinka grupe.');
+      return;
+    }
+    onPrijava(ime.trim());
+  }
+
   return (
     <div className="prijava-wrap">
       <div className="prijava-card">
         <div className="prijava-title">Dobrodošla</div>
-        <p className="prijava-sub">Upiši svoje ime da bi tvoji glasovi bili sačuvani u zborniku grupe.</p>
-        <input
-          className="inp"
-          type="text"
-          placeholder="Tvoje ime..."
-          value={ime}
-          onChange={e => setIme(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && ime.trim() && onPrijava(ime.trim())}
-          autoFocus
-        />
-        <button className="btn-primary" onClick={() => ime.trim() && onPrijava(ime.trim())}>
-          Ulaz u grupu ✦
-        </button>
+        <p className="prijava-sub">Upiši ime i lozinku grupe da bi ušla.</p>
+        <input className="inp" type="text" placeholder="Tvoje ime..." value={ime} onChange={e => setIme(e.target.value)} autoFocus />
+        <input className="inp" type="password" placeholder="Lozinka grupe..." value={lozinka} onChange={e => { setLozinka(e.target.value); setGreska(''); }} onKeyDown={e => e.key === 'Enter' && handleUlaz()} />
+        {greska && <p style={{color:'#c0392b', fontSize:'13px', margin:'4px 0 0'}}>{greska}</p>}
+        <button className="btn-primary" onClick={handleUlaz}>Ulaz u grupu ✦</button>
       </div>
+    </div>
+  );
+}
     </div>
   );
 }
