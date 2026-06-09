@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from './lib/supabase';
 import './App.css';
 
-const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD || 'procvetanje2025';
+const ADMIN_PASSWORD = 'procvetanje2026';
 const TOTAL_DAYS = 40;
 const START_DATE = new Date('2026-05-25');
 
